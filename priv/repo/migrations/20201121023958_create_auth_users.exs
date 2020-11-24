@@ -3,10 +3,11 @@ defmodule Aim.Repo.Migrations.CreateAuthUsers do
 
   def change do
     create table(:auth_users) do
-      add :nickname, :string
+      add :nickname, :string, null: false
 
       timestamps()
     end
 
+    create unique_index(:auth_users, [:nickname])
   end
 end

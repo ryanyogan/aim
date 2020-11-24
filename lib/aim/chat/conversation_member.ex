@@ -2,10 +2,14 @@ defmodule Aim.Chat.ConversationMember do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Aim.Auth.User
+  alias Aim.Chat.Conversation
+
   schema "chat_conversation_members" do
     field :owner, :boolean, default: false
-    field :conversation_id, :id
-    field :user_id, :id
+
+    belongs_to :user, User
+    belongs_to :conversation, Conversation
 
     timestamps()
   end
@@ -13,7 +17,11 @@ defmodule Aim.Chat.ConversationMember do
   @doc false
   def changeset(conversation_member, attrs) do
     conversation_member
-    |> cast(attrs, [:owner])
-    |> validate_required([:owner])
+    |> cast(attrs, [:owner, :conversation_id, :user_id])
+    |> validate_required([:owner, :conversation_id, :user_id])
+    |> unique_constraint(:user, name: :chat_conversation_members_conversation_id_user_id_index)
+    |> unique_constraint(:conversation_id,
+      name: :chat_conversation_members_owner
+    )
   end
 end
